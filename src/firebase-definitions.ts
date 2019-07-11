@@ -1,39 +1,70 @@
+interface OptionalInitializerParams {
+  $path?: true
+  $ids?: string[]
+}
+interface PathInitializerBase {
+  [key: string]: PathInitializer
+}
 
-  interface OptionalInitializerParams {
-    "$path"?: true
-    "$ids"?: string[]
+type PathInitializer = OptionalInitializerParams & PathInitializerBase
+
+type DDD<O> = {
+  [key in keyof O]?: PathInitializer
+}
+
+type Z<ZX> = DDD<ZX> & OptionalInitializerParams
+
+type C<D> = {
+  [s in keyof D]: PathInitializer
+}
+
+type F = C<PathInitializer>
+
+const a = {
+  path: {
+    subpath: {}
   }
-  interface PathInitializerBase  {
-    [key: string]: PathInitializer
+}
+
+Object.keys(a).reduce((current, key) => {
+  return
+}, {})
+
+type c = {
+  path: <A>(
+    path: keyof A
+  ) => {
+    subPath: <B>(path: keyof B) => string
   }
+}
 
-  type PathInitializer =  OptionalInitializerParams & PathInitializerBase
+const b = new A({ a: {} })
 
-  const collections = {
-    'users': {
+//   const collections = {
+//     'users': {
 
-    },
-    'profiles': {
+//     },
+//     'profiles': {
 
-    },
-    'rooms': {
-      "messages": {}
-    },
-    'companyActivities': {
-      'scoutLogs':{
+//     },
+//     'rooms': {
+//       "messages": {}
+//     },
+//     'companyActivities': {
+//       'scoutLogs':{
 
-      },
-      'toUserPermissions': {
+//       },
+//       'toUserPermissions': {
 
-      }
-    },
-    'companyUserProfiles': {
-    },
-    'companies': {},
-    'offers': {},
-    'permissions':{
+//       }
+//     },
+//     'companyUserProfiles': {
+//     },
+//     'companies': {},
+//     'offers': {},
+//     'permissions':{
 
-    },
-    'templates': {
-    }
-c}
+//     },
+//     'templates': {
+//     }
+// c}
