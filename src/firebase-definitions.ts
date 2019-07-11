@@ -5,90 +5,44 @@ interface OptionalInitializerParams {
 interface PathInitializerBase {
   [key: string]: PathInitializer
 }
-
 type PathInitializer = OptionalInitializerParams & PathInitializerBase
 
-const a = {
-  path: {
-    subpath: {
-      s: {}
-    }
-  }
+interface PathFunction<O extends PathInitializer> {
+  (): string
+  (path?: string): O extends Empty ? string : ReturnType<FirebaseScheme<O>>
+  getPath(): string
 }
 
-interface Fu<O extends PathInitializer> {
-  <T extends string>(path?: T): typeof path extends undefined ? string : ReturnType<Fa<O>>
+type Empty = { [key: string]: never }
+
+interface FirebaseScheme<O extends PathInitializer> {
+  (o: O, _path: string): O extends Empty ? string : { [key in keyof O]: PathFunction<O[keyof O]> }
 }
 
-interface Fa<O extends PathInitializer> {
-  (o: O, _path: string): O extends object ? { [s in keyof O]: Fu<O[keyof O]> } : string
+function isRecord(o: PathInitializer | Empty): o is PathInitializer {
+  return Object.keys(o).length >= 0
 }
 
-function fa<O extends PathInitializer>(o: O, _path: string): ReturnType<Fa<O>> {
-  const d = Object.keys(o) as (keyof O)[]
-  if (d.length) {
+type FirebaseSchemeResponse<O extends PathInitializer> = {
+  [key in keyof O]: PathFunction<O[keyof O]>
+}
+
+export function firebaseScheme<T extends PathInitializer>(
+  o: T | Empty,
+  _path: string = ''
+): typeof o extends Empty ? string : FirebaseSchemeResponse<T> {
+  const d = Object.keys(o) as (keyof T)[]
+  if (isRecord(o)) {
     return d.reduce((a, b, c) => {
-      const func = (id?: string) => (id ? fa(o[b], `${_path}/${b}/${id}`) : `${_path}/${b}`)
-      func.getPath = () => _path
+      const temp = (id?: typeof o['$ids'] extends string[] ? typeof o['$ids'] : string[]) => {
+        return id ? firebaseScheme(o[b], `${_path}/${b}/${id}`) : `${_path}/${b}`
+      }
+      temp.getPath = () => _path
       return {
         ...a,
-        [b]: func
+        [b]: temp
       }
-    }, {}) as ReturnType<Fa<O>>
+    }, {}) as any
   }
-  return 'test' as ReturnType<Fa<O>>
+  return _path as any
 }
-
-const z = fa(a, '')
-const d = z
-  .path()
-  .subpath()
-  .s()
-d.ffa = 'test'
-
-// const dd = Object.keys(a).reduce((current,_key)=>{
-//   // tslint:disable-next-line:no-unused-expression
-//   const fafa = Object.keys(a)
-//   a[fafa[0]]
-//   return {
-//     ...current,
-//     [_key]:(_a?:string) => {
-//       const result = _key+_a!
-//       if(!( a[_key])) return
-//       return Object.keys(a[key]).reduce((current,key)=>{
-//         return {
-//           [key]: 'test'
-//         }
-//       },{})
-//     }
-//   }
-// },{})
-
-//   const collections = {
-//     'users': {
-
-//     },
-//     'profiles': {
-
-//     },
-//     'rooms': {
-//       "messages": {}
-//     },
-//     'companyActivities': {
-//       'scoutLogs':{
-
-//       },
-//       'toUserPermissions': {
-
-//       }
-//     },
-//     'companyUserProfiles': {
-//     },
-//     'companies': {},
-//     'offers': {},
-//     'permissions':{
-
-//     },
-//     'templates': {
-//     }
-// c}
