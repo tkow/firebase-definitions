@@ -36,12 +36,12 @@ export function firebaseScheme<T extends PathInitializer>(
   if (isRecord<T>(o)) {
     const d = Object.keys(o) as (keyof T)[]
     return d.reduce((a, b, c) => {
-      const paths = [_path, b]
+      const parentPath = [_path, b].filter(Boolean).join('/')
       const temp = function<ID extends string>(id?: ID) {
-        return id ? firebaseScheme<typeof o>(o[b], `${_path}/${b}/${id}`) : `${_path}/${b}`
+        return id ? firebaseScheme<typeof o>(o[b], `${parentPath}/${id}`) : `${parentPath}`
       }
-      temp.$getIdPath = <ID extends string>(id: ID) => `${_path}/${b}/${id}`
-      temp.$getPath = () => `${_path}/${b}`
+      temp.$getIdPath = <ID extends string>(id: ID) => `${parentPath}/${id}`
+      temp.$getPath = () => `${parentPath}`
       const result = {
         ...a,
         [b]: temp,
