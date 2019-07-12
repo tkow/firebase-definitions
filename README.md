@@ -21,7 +21,7 @@ it often cause many serious problem. This library goals to prevent input string 
         foo: {},
       },
       profiles: {
-        birthDay: {}
+        posts: {}
       }
     }
   } as const
@@ -38,7 +38,11 @@ it often cause many serious problem. This library goals to prevent input string 
   // as ever we write this like firebase.firestore().collection(`users/${userId}/profiles/${profileId}`)
   // it's easily cause you mistakes like spell miss or forgetting collections.
 
-  firebase.firestore(collections.users(userId).profiles.$getIdPath(profile.id))
+  firebase.firestore().collection(collections.users(userId).profiles.$getPath())
+  firebase.firestore().doc(collections.users(userId).profiles.$getIdPath(profile.id))
+
+  // you can write shortly case most deep collction
+  firebase.firestore().doc(collections.users(userId).profiles(profile.id).posts(post.id))
 
   // completion is enabled by users and profiles, you can't miss spells or invalid input unless you have mistake in first configuration.
 ```
