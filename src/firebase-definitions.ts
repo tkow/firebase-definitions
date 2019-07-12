@@ -16,6 +16,7 @@ function isRecord<T extends PathInitializer>(o: PathInitializer | Empty): o is T
 type FirebaseSchemeResponse<O extends PathInitializer> = {
   [key in keyof O]: PathFunction<
     O[key],
+    // TODO: idsのstring[]からUnionTypeを型推論したい
     O['$ids'] extends readonly any[] ? any : O extends { $ids?: readonly any[] } ? any : string
   >
 }
