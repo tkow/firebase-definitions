@@ -14,13 +14,19 @@ function isRecord<T extends PathInitializer>(o: PathInitializer | Empty): o is T
 }
 
 type FirebaseSchemeResponse<O extends PathInitializer> = {
-  [key in keyof O]: PathFunction<O[key]>
+  [key in keyof O]: PathFunction<
+    O[key],
+    O['$ids'] extends readonly any[] ? any : O extends { $ids?: readonly any[] } ? any : string
+  >
 }
 
 interface PathFunction<O extends PathInitializer, Path extends string = string> {
   (): string
-  (path?: Path): O extends Empty ? string : FirebaseSchemeResponse<O>
-  getPath(): string
+  (path?: Path): O extends Empty
+    ? string
+    : FirebaseSchemeResponse<O> & { $getPath<ID extends string>(id?: ID): string }
+  $getIdPath<ID extends string>(id: ID): string
+  $getPath(): string
 }
 
 export function firebaseScheme<T extends PathInitializer>(
@@ -33,10 +39,15 @@ export function firebaseScheme<T extends PathInitializer>(
       const temp = function<ID extends string>(id?: ID) {
         return id ? firebaseScheme<typeof o>(o[b], `${_path}/${b}/${id}`) : `${_path}/${b}`
       }
-      temp.getPath = () => _path
+      temp.$getIdPath = <ID extends string>(id: ID) => `${_path}/${id}`
+      temp.$getPath = <ID extends string>(id: ID) => _path
       const result = {
         ...a,
-        [b]: temp
+        [b]: temp,
+        $getPath<ID extends string>(id?: ID): string {
+          if (!id) return _path
+          return `${_path}/${id}`
+        }
       }
       return result
     }, {}) as any
