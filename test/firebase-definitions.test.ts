@@ -8,7 +8,7 @@ describe('get path firestore', () => {
         $ids: ['test']
       },
       profiles: {
-        d: {}
+        birthDay: {}
       }
     }
   } as const
@@ -43,7 +43,6 @@ describe('get path firestore', () => {
       .users('john')
       .private('accessary')
       .$getPath()
-
     expect(d).toEqual('users/john/private/accessary')
   })
 })
