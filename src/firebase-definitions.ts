@@ -7,19 +7,6 @@ interface PathInitializerBase {
 }
 type PathInitializer = OptionalInitializerParams & PathInitializerBase
 
-const a = {
-  path: {
-    subpath: {
-      s: {
-        ss: {}
-      }
-    },
-    test: {
-      faaf: {}
-    }
-  }
-} as const
-
 type Empty = { [key: string]: never }
 
 function isRecord<T extends PathInitializer>(o: PathInitializer | Empty): o is T {
@@ -48,7 +35,7 @@ export function firebaseScheme<T extends PathInitializer>(
     const d = Object.keys(o) as (keyof T)[]
     return d.reduce((a, b, c) => {
       const temp = <ID extends string>(id?: ID) =>
-        id ? firebaseScheme(o[b], `${_path}/${b}/${id}`) : (`${_path}/${b}` as any)
+        id ? firebaseScheme<typeof o>(o[b], `${_path}/${b}/${id}`) : `${_path}/${b}`
       temp.getPath = () => _path
       const result = {
         ...a,
@@ -57,7 +44,20 @@ export function firebaseScheme<T extends PathInitializer>(
       return result
     }, {}) as any
   }
-  return {} as any
+  return _path as any
+}
+
+const a = {
+  path: {
+    subpath: {
+      s: {
+        ss: {}
+      }
+    },
+    test: {
+      faaf: {}
+    }
+  }
 }
 
 const d = firebaseScheme(a)
@@ -65,3 +65,7 @@ d.path('')
   .subpath('')
   .s('')
   .ss('')
+
+d.path('')
+  .test('')
+  .faaf('')

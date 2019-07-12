@@ -16,7 +16,10 @@ const firestore = firebaseScheme(collections)
  */
 describe('get path firestore', () => {
   it("scheme.collection('Id') works", () => {
-    const d = firestore.users('id1').profiles('')
+    const d = firestore
+      .users('id1')
+      .profiles('')
+      .d('')
     expect(true).toBeTruthy()
   })
 
