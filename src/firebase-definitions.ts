@@ -17,13 +17,9 @@ type FirebaseSchemeResponse<O extends PathInitializer> = {
   [key in keyof O]: PathFunction<O[key]>
 }
 
-interface FirebaseScheme<O extends PathInitializer> {
-  (o: O, _path: string): O extends Empty ? string : FirebaseSchemeResponse<O>
-}
-
-interface PathFunction<O extends PathInitializer> {
+interface PathFunction<O extends PathInitializer, Path extends string = string> {
   (): string
-  (path?: string): O extends Empty ? string : ReturnType<FirebaseScheme<O>>
+  (path?: Path): O extends Empty ? string : FirebaseSchemeResponse<O>
   getPath(): string
 }
 
@@ -34,8 +30,9 @@ export function firebaseScheme<T extends PathInitializer>(
   if (isRecord<T>(o)) {
     const d = Object.keys(o) as (keyof T)[]
     return d.reduce((a, b, c) => {
-      const temp = <ID extends string>(id?: ID) =>
-        id ? firebaseScheme<typeof o>(o[b], `${_path}/${b}/${id}`) : `${_path}/${b}`
+      const temp = function<ID extends string>(id?: ID) {
+        return id ? firebaseScheme<typeof o>(o[b], `${_path}/${b}/${id}`) : `${_path}/${b}`
+      }
       temp.getPath = () => _path
       const result = {
         ...a,
@@ -46,26 +43,3 @@ export function firebaseScheme<T extends PathInitializer>(
   }
   return _path as any
 }
-
-const a = {
-  path: {
-    subpath: {
-      s: {
-        ss: {}
-      }
-    },
-    test: {
-      faaf: {}
-    }
-  }
-}
-
-const d = firebaseScheme(a)
-d.path('')
-  .subpath('')
-  .s('')
-  .ss('')
-
-d.path('')
-  .test('')
-  .faaf('')
