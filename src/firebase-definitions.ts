@@ -35,16 +35,18 @@ export function firebaseScheme<T extends PathInitializer>(
 ): T extends Empty ? Empty : FirebaseSchemeResponse<T> {
   if (isRecord<T>(o)) {
     const d = Object.keys(o) as (keyof T)[]
-    return d.reduce((a, b, c) => {
-      const parentPath = [_path, b].filter(Boolean).join('/')
-      const temp = function<ID extends string>(id?: ID) {
-        return id ? firebaseScheme<typeof o>(o[b], `${parentPath}/${id}`) : `${parentPath}`
+    return d.reduce((collectionGenerators, collectionName, _) => {
+      const parentPath = [_path, collectionName].filter(Boolean).join('/')
+      const generator = function<ID extends string>(id?: ID) {
+        return id
+          ? firebaseScheme<typeof o>(o[collectionName], `${parentPath}/${id}`)
+          : `${parentPath}`
       }
-      temp.$getIdPath = <ID extends string>(id: ID) => `${parentPath}/${id}`
-      temp.$getPath = () => `${parentPath}`
+      generator.$getIdPath = <ID extends string>(id: ID) => `${parentPath}/${id}`
+      generator.$getPath = () => `${parentPath}`
       const result = {
-        ...a,
-        [b]: temp,
+        ...collectionGenerators,
+        [collectionName]: generator,
         $getPath<ID extends string>(id?: ID): string {
           if (!id) return _path
           return `${_path}/${id}`
