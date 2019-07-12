@@ -2,7 +2,7 @@
   "name": "firebase-definitions",
   "version": "0.0.0",
   "description": "",
-  "keywords": [],
+  "keywords": ["firebase","firestore","realtimedatabase","scheme","typescript"],
   "main": "dist/firebase-definitions.umd.js",
   "module": "dist/firebase-definitions.es5.js",
   "typings": "dist/types/firebase-definitions.d.ts",
