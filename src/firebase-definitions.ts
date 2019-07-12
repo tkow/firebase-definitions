@@ -3,9 +3,36 @@ interface OptionalInitializerParams {
   $ids?: string[]
 }
 interface PathInitializerBase {
-  [key: string]: PathInitializer
+  [key: string]: any
 }
 type PathInitializer = OptionalInitializerParams & PathInitializerBase
+
+const a = {
+  path: {
+    subpath: {
+      s: {
+        ss: {}
+      }
+    },
+    test: {
+      faaf: {}
+    }
+  }
+} as const
+
+type Empty = { [key: string]: never }
+
+function isRecord<T extends PathInitializer>(o: PathInitializer | Empty): o is T {
+  return Object.keys(o).length >= 0
+}
+
+type FirebaseSchemeResponse<O extends PathInitializer> = {
+  [key in keyof O]: PathFunction<O[key]>
+}
+
+interface FirebaseScheme<O extends PathInitializer> {
+  (o: O, _path: string): O extends Empty ? string : FirebaseSchemeResponse<O>
+}
 
 interface PathFunction<O extends PathInitializer> {
   (): string
@@ -13,36 +40,28 @@ interface PathFunction<O extends PathInitializer> {
   getPath(): string
 }
 
-type Empty = { [key: string]: never }
-
-interface FirebaseScheme<O extends PathInitializer> {
-  (o: O, _path: string): O extends Empty ? string : { [key in keyof O]: PathFunction<O[keyof O]> }
-}
-
-function isRecord(o: PathInitializer | Empty): o is PathInitializer {
-  return Object.keys(o).length >= 0
-}
-
-type FirebaseSchemeResponse<O extends PathInitializer> = {
-  [key in keyof O]: PathFunction<O[keyof O]>
-}
-
 export function firebaseScheme<T extends PathInitializer>(
   o: T | Empty,
   _path: string = ''
-): typeof o extends Empty ? string : FirebaseSchemeResponse<T> {
-  const d = Object.keys(o) as (keyof T)[]
-  if (isRecord(o)) {
+): T extends Empty ? Empty : FirebaseSchemeResponse<T> {
+  if (isRecord<T>(o)) {
+    const d = Object.keys(o) as (keyof T)[]
     return d.reduce((a, b, c) => {
-      const temp = (id?: typeof o['$ids'] extends string[] ? typeof o['$ids'] : string[]) => {
-        return id ? firebaseScheme(o[b], `${_path}/${b}/${id}`) : `${_path}/${b}`
-      }
+      const temp = <ID extends string>(id?: ID) =>
+        id ? firebaseScheme(o[b], `${_path}/${b}/${id}`) : (`${_path}/${b}` as any)
       temp.getPath = () => _path
-      return {
+      const result = {
         ...a,
         [b]: temp
       }
+      return result
     }, {}) as any
   }
-  return _path as any
+  return {} as any
 }
+
+const d = firebaseScheme(a)
+d.path('')
+  .subpath('')
+  .s('')
+  .ss('')
