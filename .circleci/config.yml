@@ -16,6 +16,12 @@ commands:
           name: Restore yarn dependencies
           # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
           key: dependency-cache-{{ checksum "yarn.lock" }}
+  restore_prod:
+    steps:
+      - restore_cache: # 依存関係キャッシュを復元する特別なステップ
+          name: Restore yarn dependencies
+          # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
+          key: dependency-cache-{{ checksum "yarn.lock" }}
   save_yarn:
     steps:
       - save_cache: # 依存関係キャッシュを保存する特別なステップ
@@ -23,6 +29,13 @@ commands:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+  save_prod:
+    steps:
+      - save_cache: # 依存関係キャッシュを保存する特別なステップ
+          name: Cache yarn dependencies
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ~/dist
 
 jobs:
   build:
@@ -32,6 +45,9 @@ jobs:
       - checkout
       - restore_yarn
       - yarn_install
+      - run:
+          name: build pacakage
+          command: yarn build
       - save_yarn
 
   test:
@@ -41,6 +57,7 @@ jobs:
       - checkout
       - restore_yarn
       - yarn_install
+      - restore_prod
       - run: # テストを実行
           name: test
           command: yarn test
