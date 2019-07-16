@@ -1,4 +1,5 @@
 version: 2
+
 jobs:
   build:
     docker:
@@ -25,14 +26,17 @@ jobs:
       - run:
         name: release
         command: npm run semantic-release || true
+
 workflows:
-  version: 2
   release:
     jobs:
       - build
       - test:
-        requires:
-          - build
+          requires:
+            - build
       - deploy:
-        requires:
-          - test
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
