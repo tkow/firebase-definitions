@@ -18,7 +18,7 @@
   "author": "tkow <t.kusama0613@outlook.jp>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tkow/firebase-definitions"
+    "url": "https://github.com/tkow/firebase-definitions.git"
   },
   "license": "MIT",
   "engines": {
