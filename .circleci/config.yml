@@ -31,9 +31,10 @@ workflows:
     jobs:
       - build
       - test
-      - deploy-production:
         requires:
           - build
+      - deploy-production:
+        requires:
           - test
         filters:
           branches:
