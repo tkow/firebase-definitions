@@ -57,7 +57,6 @@ jobs:
       - checkout
       - restore_yarn
       - yarn_install
-      - restore_prod
       - run: # テストを実行
           name: test
           command: yarn test
@@ -68,6 +67,7 @@ jobs:
       - checkout
       - restore_yarn
       - yarn_install
+      - restore_prod
       - run:
           name: release
           command: yarn run semantic-release
