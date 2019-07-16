@@ -1,11 +1,17 @@
 version: 2.1
 
+executors:
+  # ここに好きな名前で executor を定義できる
+  default:
+    docker:
+      - image: 'circleci/node:latest'
+
 commands:
   yarn_install:
     steps:
       - run:
-        name: install
-        command: yarn install --frozen-lockfile
+          name: install
+          command: yarn install --frozen-lockfile
   restore_yarn:
     steps:
       - restore_cache: # 依存関係キャッシュを復元する特別なステップ
@@ -19,10 +25,11 @@ commands:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+
 jobs:
   build:
-    docker:
-      - image: 'circleci/node:latest'
+    executor: # name で使いたい executor を指定する
+      name: default
     steps:
       - checkout
       - restore_yarn
@@ -30,8 +37,8 @@ jobs:
       - save_yarn
 
   test:
-    docker:
-      - image: 'circleci/node:latest'
+    executor: # name で使いたい executor を指定する
+      name: default
     steps:
       - checkout
       - restore_yarn
@@ -40,8 +47,8 @@ jobs:
         name: test
         command: yarn test
   deploy:
-    docker:
-      - image: 'circleci/node:latest'
+    executor: # name で使いたい executor を指定する
+      name: default
     steps:
       - checkout
       - restore_yarn
