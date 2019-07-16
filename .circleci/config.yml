@@ -1,21 +1,32 @@
 version: 2.0
 
+commands:
+  yarn_install:
+    steps:
+      - run:
+        name: install
+        command: yarn install --frozen-lockfile
+  restore_yarn:
+    steps:
+      - restore_cache: # 依存関係キャッシュを復元する特別なステップ
+          # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+  save_yarn:
+    steps:
+      - save_cache: # 依存関係キャッシュを保存する特別なステップ
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
 jobs:
   build:
     docker:
       - image: 'circleci/node:latest'
     steps:
       - checkout
-      - restore_cache: # 依存関係キャッシュを復元する特別なステップ
-          # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
-          key: dependency-cache-{{ checksum "yarn.lock" }}
-      - run:
-        name: install
-        command: yarn install --frozen-lockfile
-      - save_cache: # 依存関係キャッシュを保存する特別なステップ
-          key: dependency-cache-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
+      - restore_yarn
+      - yarn_install
+      - save_yarn
+
   test:
     docker:
       - image: 'circleci/node:latest'
@@ -24,9 +35,7 @@ jobs:
       - restore_cache: # 依存関係キャッシュを復元する特別なステップ
           # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
           key: dependency-cache-{{ checksum "yarn.lock" }}
-      - run:
-        name: install
-        command: yarn install --frozen-lockfile
+      - yarn_install
       - run: # テストを実行
         name: test
         command: yarn test
@@ -38,9 +47,7 @@ jobs:
       - restore_cache: # 依存関係キャッシュを復元する特別なステップ
           # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
           key: dependency-cache-{{ checksum "yarn.lock" }}
-      - run:
-        name: install
-        command: yarn install --frozen-lockfile
+      - yarn_install
       - run:
         name: release
         command: yarn run semantic-release || true
