@@ -1,8 +1,14 @@
 {
   "name": "firebase-definitions",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "",
-  "keywords": ["firebase","firestore","realtimedatabase","scheme","typescript"],
+  "keywords": [
+    "firebase",
+    "firestore",
+    "realtimedatabase",
+    "scheme",
+    "typescript"
+  ],
   "main": "dist/firebase-definitions.umd.js",
   "module": "dist/firebase-definitions.es5.js",
   "typings": "dist/types/firebase-definitions.d.ts",
@@ -12,7 +18,7 @@
   "author": "tkow <t.kusama0613@outlook.jp>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/tkow/firebase-definitions"
   },
   "license": "MIT",
   "engines": {
@@ -32,7 +38,9 @@
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "precommit": "lint-staged",
-    "travis-deploy-once": "travis-deploy-once"
+    "travis-deploy-once": "travis-deploy-once",
+    "prepush": "npm run test:prod && npm run build",
+    "commitmsg": "commitlint -E HUSKY_GIT_PARAMS"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -62,10 +70,10 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 90,
-        "functions": 95,
-        "lines": 95,
-        "statements": 95
+        "branches": 80,
+        "functions": 80,
+        "lines": 90,
+        "statements": 90
       }
     },
     "collectCoverageFrom": [
@@ -106,7 +114,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript2": "^0.21.2",
-    "semantic-release": "^15.9.16",
+    "semantic-release": "^15.13.18",
     "shelljs": "^0.8.3",
     "travis-deploy-once": "^5.0.9",
     "ts-jest": "^24.0.2",
