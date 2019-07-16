@@ -49,6 +49,7 @@ jobs:
           name: build pacakage
           command: yarn build
       - save_yarn
+      - save_prod
 
   test:
     executor: # name で使いたい executor を指定する
