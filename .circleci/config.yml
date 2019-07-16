@@ -21,9 +21,10 @@ jobs:
         name: test
         command: npm test
   deploy-production:
-    - run:
-      name: release
-      command: npm run semantic-release || true
+    steps:
+      - run:
+        name: release
+        command: npm run semantic-release || true
 workflows:
   version: 2
   semantic-release:
