@@ -42,8 +42,8 @@ jobs:
       - restore_yarn
       - yarn_install
       - run: # テストを実行
-        name: test
-        command: yarn test
+          name: test
+          command: yarn test
   deploy:
     executor: # name で使いたい executor を指定する
       name: default
@@ -52,8 +52,8 @@ jobs:
       - restore_yarn
       - yarn_install
       - run:
-        name: release
-        command: yarn run semantic-release || true
+          name: release
+          command: yarn run semantic-release || true
 
 workflows:
   version: 2
