@@ -19,7 +19,7 @@ commands:
   restore_prod:
     steps:
       - restore_cache: # 依存関係キャッシュを復元する特別なステップ
-          name: Restore yarn dependencies
+          name: Restore package build
           # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
           key: dependency-cache-{{ checksum "yarn.lock" }}
   save_yarn:
@@ -32,10 +32,10 @@ commands:
   save_prod:
     steps:
       - save_cache: # 依存関係キャッシュを保存する特別なステップ
-          name: Cache yarn dependencies
+          name: Cache package build
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - ~/dist
+            - ./dist
 
 jobs:
   build:
@@ -68,6 +68,9 @@ jobs:
       - restore_yarn
       - yarn_install
       - restore_prod
+      - run:
+          name: check package
+          command: '[ -d ~/dist ] && ls ./dist'
       - run:
           name: release
           command: yarn run semantic-release
