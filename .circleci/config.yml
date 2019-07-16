@@ -53,7 +53,7 @@ jobs:
       - yarn_install
       - run:
           name: release
-          command: yarn run semantic-release || true
+          command: yarn run semantic-release
 
 workflows:
   version: 2
