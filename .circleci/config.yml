@@ -11,7 +11,7 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
         name: install
-        command: yarn install
+        command: yarn install --frozen-lockfile
       - save_cache: # 依存関係キャッシュを保存する特別なステップ
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
@@ -26,7 +26,7 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
         name: install
-        command: yarn install
+        command: yarn install --frozen-lockfile
       - run: # テストを実行
         name: test
         command: yarn test
@@ -40,7 +40,7 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
         name: install
-        command: yarn install
+        command: yarn install --frozen-lockfile
       - run:
         name: release
         command: yarn run semantic-release || true
