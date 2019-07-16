@@ -70,7 +70,7 @@ jobs:
       - restore_prod
       - run:
           name: check package
-          command: '[ -d ~/dist ] && ls ./dist'
+          command: '[ -d ./dist ] && ls ./dist'
       - run:
           name: release
           command: yarn run semantic-release
