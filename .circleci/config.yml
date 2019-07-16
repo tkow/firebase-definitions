@@ -30,10 +30,11 @@ workflows:
   semantic-release:
     jobs:
       - build
-      - test
-      - deploy-production:
+      - test:
         requires:
           - build
+      - deploy-production:
+        requires:
           - test
         filters:
           branches:
