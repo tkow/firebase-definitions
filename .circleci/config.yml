@@ -34,9 +34,7 @@ jobs:
       - image: 'circleci/node:latest'
     steps:
       - checkout
-      - restore_cache: # 依存関係キャッシュを復元する特別なステップ
-          # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
-          key: dependency-cache-{{ checksum "yarn.lock" }}
+      - restore_yarn
       - yarn_install
       - run: # テストを実行
         name: test
@@ -46,9 +44,7 @@ jobs:
       - image: 'circleci/node:latest'
     steps:
       - checkout
-      - restore_cache: # 依存関係キャッシュを復元する特別なステップ
-          # 依存関係キャッシュについては https://circleci.com/docs/ja/2.0/caching/ をお読みください
-          key: dependency-cache-{{ checksum "yarn.lock" }}
+      - restore_yarn
       - yarn_install
       - run:
         name: release
