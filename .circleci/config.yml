@@ -20,20 +20,20 @@ jobs:
       - run: # テストを実行
         name: test
         command: npm test
-  deploy-production:
+  deploy:
     steps:
       - run:
         name: release
         command: npm run semantic-release || true
 workflows:
   version: 2
-  semantic-release:
+  release:
     jobs:
       - build
       - test:
         requires:
           - build
-      - deploy-production:
+      - deploy:
         requires:
           - test
         filters:
