@@ -17,11 +17,15 @@ jobs:
         paths:
           - ./node_modules
   test:
+    docker:
+      - image: 'circleci/node:latest'
     steps:
       - run: # テストを実行
         name: test
         command: npm test
   deploy:
+    docker:
+      - image: 'circleci/node:latest'
     steps:
       - run:
         name: release
