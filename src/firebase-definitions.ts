@@ -10,7 +10,7 @@ type PathInitializer = OptionalInitializerParams & PathInitializerBase
 type Empty = { [key: string]: never }
 
 function isRecord<T extends PathInitializer>(o: PathInitializer | Empty): o is T {
-  return Object.keys(o).length >= 0
+  return Object.keys(o).length > 0
 }
 
 type FirebaseSchemeResponse<O extends PathInitializer> = {

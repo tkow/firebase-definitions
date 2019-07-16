@@ -45,4 +45,12 @@ describe('get path firestore', () => {
       .$getPath()
     expect(d).toEqual('users/john/private/accessary')
   })
+
+  it('scheme.collection1("id1").collection2("id2").collection3("id3") can create path /c1/id/c2/id/c3/id', () => {
+    const d = firestore
+      .users('john')
+      .private('accessary')
+      .fuga('normal')
+    expect(d).toEqual('users/john/private/accessary/fuga/normal')
+  })
 })
