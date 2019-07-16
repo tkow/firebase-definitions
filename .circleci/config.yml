@@ -9,9 +9,7 @@ executors:
 commands:
   yarn_install:
     steps:
-      - run:
-          name: install
-          command: yarn install --frozen-lockfile
+      - run: yarn install --frozen-lockfile
   restore_yarn:
     steps:
       - restore_cache: # 依存関係キャッシュを復元する特別なステップ
