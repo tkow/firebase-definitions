@@ -7,7 +7,8 @@ This libary cache path information in an object and convert the path with inputt
 
 Regardless of string input will be easily trouble as increasingly using many times and many files by typo, missing configuration, ordered naming,
 it often cause many serious problem. This library goals to prevent input string data as possible, enable auto completion, and give handy recognition
- we have what or how many collection, subcollection or storage path by collection config in one place.
+ we have what or how many collection, subcollection or storage path by collection config in one place. No more missing db definitions.
+
 
 ### Usage
 
