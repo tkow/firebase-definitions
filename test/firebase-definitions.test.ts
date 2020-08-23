@@ -1,48 +1,28 @@
 import { firebaseScheme } from '../src/firebase-definitions'
 
-describe('get path firestore', () => {
-  const collections = {
-    users: {
-      private: {
-        fuga: {},
-        $ids: ['test']
-      },
-      profiles: {
-        birthDay: {}
-      }
+const collections = {
+  users: {
+    private: {
+      fuga: {}
+    },
+    profiles: {
+      birthDay: {}
     }
-  } as const
+  }
+} as const
 
-  const firestore = firebaseScheme(collections)
+const firestore = firebaseScheme(collections)
 
-  it('scheme.collectionName completion works', () => {
-    const d = firestore
-      .users('id1')
-      .private('test')
-      .fuga('')
-    expect(typeof d === 'string').toBeTruthy()
-  })
+type UserIds = 'john' | 'josh'
 
+describe('get path firestore', () => {
   it('scheme.collectionName() can read collectionName', () => {
     const d = firestore.users('id1').private()
     expect(d).toEqual('users/id1/private')
   })
 
-  it('scheme.collectionName(id).collection.$getPath() can read collectionName', () => {
-    const d = firestore.users('id1').private.$getPath()
-    expect(d).toEqual('users/id1/private')
-  })
-
-  it('scheme.collection1("id1").collection2.$geIdPath("id2") can create path /c1/id/c2/id', () => {
-    const d = firestore.users('john').private.$getIdPath('accessary')
-    expect(d).toEqual('users/john/private/accessary')
-  })
-
-  it('scheme.collection1("id1").collection2("id2").$getPath() can create path /c1/id/c2/id', () => {
-    const d = firestore
-      .users('john')
-      .private('accessary')
-      .$getPath()
+  it('scheme.collection1("id1").collection2.$$id("id2") can create path /c1/id/c2/id', () => {
+    const d = firestore.users<UserIds>('john').private.$id('accessary')
     expect(d).toEqual('users/john/private/accessary')
   })
 
@@ -52,5 +32,10 @@ describe('get path firestore', () => {
       .private('accessary')
       .fuga('normal')
     expect(d).toEqual('users/john/private/accessary/fuga/normal')
+    const e = firestore
+      .users('john')
+      .private('accessary')
+      .fuga.$id('normal')
+    expect(e).toEqual('users/john/private/accessary/fuga/normal')
   })
 })

@@ -1,36 +1,25 @@
-interface OptionalInitializerParams {
-  $path?: true
+export type OptionalInitializerParams = {
+  [key: string]: OptionalInitializerParams | any
   $ids?: string[]
 }
-interface PathInitializerBase {
-  [key: string]: any
-}
-type PathInitializer = OptionalInitializerParams & PathInitializerBase
 
 type Empty = { [key: string]: never }
 
-function isRecord<T extends PathInitializer>(o: PathInitializer | Empty): o is T {
+function isRecord<T extends OptionalInitializerParams>(o: T | Empty): o is T {
   return Object.keys(o).length > 0
 }
 
-type FirebaseSchemeResponse<O extends PathInitializer> = {
-  [key in keyof O]: PathFunction<
-    O[key],
-    // TODO: idsのstring[]からUnionTypeを型推論したい
-    O['$ids'] extends readonly any[] ? any : O extends { $ids?: readonly any[] } ? any : string
-  >
+export type FirebaseSchemeResponse<O extends OptionalInitializerParams> = {
+  [key in keyof O]: PathFunction<O[key]>
 }
 
-interface PathFunction<O extends PathInitializer, Path extends string = string> {
+export interface PathFunction<O extends OptionalInitializerParams> {
   (): string
-  (path?: Path): O extends Empty
-    ? string
-    : FirebaseSchemeResponse<O> & { $getPath<ID extends string>(id?: ID): string }
-  $getIdPath<ID extends string>(id: ID): string
-  $getPath(): string
+  <Path extends string = string>(path?: Path): O extends Empty ? string : FirebaseSchemeResponse<O>
+  $id<ID extends string>(id: ID): string
 }
 
-export function firebaseScheme<T extends PathInitializer>(
+export function firebaseScheme<T extends OptionalInitializerParams>(
   o: T | Empty,
   _path: string = ''
 ): T extends Empty ? Empty : FirebaseSchemeResponse<T> {
@@ -40,18 +29,16 @@ export function firebaseScheme<T extends PathInitializer>(
       const parentPath = [_path, collectionName].filter(Boolean).join('/')
       const generator = function<ID extends string>(id?: ID) {
         return id
-          ? firebaseScheme<typeof o>(o[collectionName], `${parentPath}/${id}`)
+          ? firebaseScheme(o[collectionName] as any, `${parentPath}/${id}`)
           : `${parentPath}`
       }
-      generator.$getIdPath = <ID extends string>(id: ID) => `${parentPath}/${id}`
-      generator.$getPath = () => `${parentPath}`
+      const $id = <ID = typeof o['$ids'] extends string[] ? typeof o['$ids'][number] : string>(
+        id: ID
+      ) => `${parentPath}/${id}`
+      generator.$id = $id
       const result = {
         ...collectionGenerators,
-        [collectionName]: generator,
-        $getPath<ID extends string>(id?: ID): string {
-          if (!id) return _path
-          return `${_path}/${id}`
-        }
+        [collectionName]: generator
       }
       return result
     }, {}) as any

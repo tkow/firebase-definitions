@@ -39,20 +39,15 @@ it often cause many serious problem. This library goals to prevent input string 
   // as ever we write this like firebase.firestore().collection(`users/${userId}/profiles/${profileId}`)
   // it's easily cause you mistakes like spell miss or forgetting collections.
 
-  firebase.firestore().collection(collections.users(userId).profiles.$getPath())
-  firebase.firestore().doc(collections.users(userId).profiles.$getIdPath(profile.id))
+  firebase.firestore().collection(collections.users())
+
+  firebase.firestore().doc(collections.users(userId).profiles.$id(profile.id))
 
   // you can write shortly case most deep collction
   firebase.firestore().doc(collections.users(userId).profiles(profile.id).posts(post.id))
 
   // completion is enabled by users and profiles, you can't miss spells or invalid input unless you have mistake in first configuration.
 ```
-
-### Help Wanted
-
-I have some idea of setting union typed string literal arguments by generics (like `scheme.food(id:'orange'|'banana'|'apple')` definitions automatically or seaquenceof structure for storage or firebase
-like `/assets/images/${id}` and `/assets/videos/${id}`).But, some difficult to manage typing with recurred clojure functions, if you help me, I really appreciate it.
-
 
 ### License
 
