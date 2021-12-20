@@ -1,4 +1,4 @@
-# Firebase Defintitions
+# Firebase Definitions
 
 Scheme in firebase (current: firestore only, planned: realtimedatabase and storage) can be preserved formatting json.
 This libary cache path information in an object and convert the path with inputted id and path completion.
